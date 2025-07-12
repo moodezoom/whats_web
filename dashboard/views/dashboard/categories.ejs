@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الفئات - لوحة تحكم بوت الوظائف</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            transition: background 0.3s;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border-radius: 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .navbar {
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* الوضع الليلي */
+        body.dark-mode {
+            background-color: #181a1b !important;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .flip-card-front,
+        body.dark-mode .flip-card-back {
+            background: #23272b !important;
+            color: #e0e0e0;
+            border-color: #333 !important;
+        }
+
+        body.dark-mode .card-header {
+            background: #23272b !important;
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar {
+            background: #222 !important;
+            color: #fff;
+        }
+
+        body.dark-mode .btn-primary,
+        body.dark-mode .btn-success,
+        body.dark-mode .btn-info {
+            filter: brightness(0.9);
+        }
+
+        body.dark-mode .btn-outline-primary {
+            color: #90caf9;
+            border-color: #90caf9;
+        }
+
+        body.dark-mode .btn-outline-primary:hover {
+            background: #90caf9;
+            color: #181a1b;
+        }
+
+        body.dark-mode .text-primary {
+            color: #90caf9 !important;
+        }
+
+        body.dark-mode .text-success {
+            color: #81c784 !important;
+        }
+
+        body.dark-mode .text-info {
+            color: #4fc3f7 !important;
+        }
+
+        body.dark-mode .border-info {
+            border-color: #4fc3f7 !important;
+        }
+
+        body.dark-mode .border-primary {
+            border-color: #90caf9 !important;
+        }
+
+        body.dark-mode .border {
+            border-color: #333 !important;
+        }
+
+        body.dark-mode .table,
+        body.dark-mode .table-hover>tbody>tr,
+        body.dark-mode .table>thead {
+            background: #23272b !important;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .table-hover>tbody>tr:hover {
+            background: #2c3136 !important;
+        }
+
+        body.dark-mode .table th,
+        body.dark-mode .table td {
+            background: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #333 !important;
+        }
+
+        body.dark-mode .form-control {
+            background: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+
+        body.dark-mode .form-control:focus {
+            background: #23272b !important;
+            color: #fff !important;
+            border-color: #90caf9 !important;
+            box-shadow: 0 0 0 0.2rem rgba(144, 202, 249, .15);
+        }
+
+        body.dark-mode .card {
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.25);
+        }
+
+        body.dark-mode .badge.bg-primary {
+            background-color: #1976d2 !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-robot"></i> لوحة تحكم بوت الوظائف
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <a class="nav-link" href="/dashboard/settings">
+                    <i class="bi bi-gear"></i> الإعدادات
+                </a>
+                <a class="nav-link active" href="/dashboard/categories">
+                    <i class="bi bi-list-ul"></i> الفئات
+                </a>
+                <!-- زر الوضع الليلي -->
+                <button id="toggleDark" class="btn btn-outline-light ms-3" title="تبديل الوضع الليلي">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-5">
+                    <i class="bi bi-list-ul"></i> إدارة الفئات
+                </h1>
+            </div>
+        </div>
+
+        <!-- إضافة فئة جديدة -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-circle"></i> إضافة فئة جديدة
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/dashboard/categories/add">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">اسم الفئة</label>
+                                    <input type="text" name="name" class="form-control" placeholder="مثال: وظائف تقنية"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">الترتيب</label>
+                                    <input type="number" name="ordering" class="form-control" placeholder="مثال: 7"
+                                        required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-plus-lg"></i> إضافة
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- قائمة الفئات -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-check"></i> الفئات الموجودة
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (categories && categories.length> 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>الترتيب</th>
+                                            <th>اسم الفئة</th>
+                                            <th>عدد الوظائف</th>
+                                            <th>الإجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% categories.forEach(function(category) { %>
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">
+                                                        <%= category.ordering %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <strong>
+                                                        <%= category.name %>
+                                                    </strong>
+                                                </td>
+                                                <td>
+                                                    <a href="/dashboard/jobs/<%= category.id %>"
+                                                        class="btn btn-sm btn-outline-info">
+                                                        <i class="bi bi-briefcase"></i> إدارة الوظائف
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button type="button" class="btn btn-sm btn-warning"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#editModal<%= category.id %>">
+                                                            <i class="bi bi-pencil"></i> تعديل
+                                                        </button>
+                                                        <form method="POST" action="/dashboard/categories/delete"
+                                                            style="display: inline;">
+                                                            <input type="hidden" name="id" value="<%= category.id %>">
+                                                            <button type="submit" class="btn btn-sm btn-danger"
+                                                                onclick="return confirm('هل أنت متأكد من حذف هذه الفئة؟')">
+                                                                <i class="bi bi-trash"></i> حذف
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <% } else { %>
+                                <div class="alert alert-info text-center">
+                                    <i class="bi bi-info-circle"></i> لا توجد فئات حالياً
+                                </div>
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal تعديل الفئات -->
+    <% categories.forEach(function(category) { %>
+        <div class="modal fade" id="editModal<%= category.id %>" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="bi bi-pencil"></i> تعديل الفئة
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="POST" action="/dashboard/categories/update">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" value="<%= category.id %>">
+
+                            <div class="mb-3">
+                                <label class="form-label">اسم الفئة</label>
+                                <input type="text" name="name" class="form-control" value="<%= category.name %>"
+                                    required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">الترتيب</label>
+                                <input type="number" name="ordering" class="form-control"
+                                    value="<%= category.ordering %>" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> حفظ التغييرات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // زر الوضع الليلي
+                const toggleDark = document.getElementById('toggleDark');
+                function setDarkMode(on) {
+                    if (on) {
+                        document.body.classList.add('dark-mode');
+                        localStorage.setItem('dark-mode', '1');
+                        toggleDark.innerHTML = '<i class="bi bi-brightness-high-fill"></i>';
+                        toggleDark.title = 'تبديل إلى الوضع الفاتح';
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        localStorage.setItem('dark-mode', '0');
+                        toggleDark.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                        toggleDark.title = 'تبديل الوضع الليلي';
+                    }
+                }
+                // عند الضغط
+                toggleDark.onclick = function () {
+                    setDarkMode(!document.body.classList.contains('dark-mode'));
+                };
+                // عند تحميل الصفحة
+                if (localStorage.getItem('dark-mode') === '1') {
+                    setDarkMode(true);
+                }
+            </script>
+</body>
+
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الإعدادات - لوحة تحكم بوت الوظائف</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            transition: background 0.3s;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border-radius: 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .navbar {
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* الوضع الليلي */
+        body.dark-mode {
+            background-color: #181a1b !important;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .flip-card-front,
+        body.dark-mode .flip-card-back {
+            background: #23272b !important;
+            color: #e0e0e0;
+            border-color: #333 !important;
+        }
+
+        body.dark-mode .card-header {
+            background: #23272b !important;
+            border-bottom: 1px solid #333;
+        }
+
+        body.dark-mode .navbar {
+            background: #222 !important;
+            color: #fff;
+        }
+
+        body.dark-mode .btn-primary,
+        body.dark-mode .btn-success,
+        body.dark-mode .btn-info {
+            filter: brightness(0.9);
+        }
+
+        body.dark-mode .btn-outline-primary {
+            color: #90caf9;
+            border-color: #90caf9;
+        }
+
+        body.dark-mode .btn-outline-primary:hover {
+            background: #90caf9;
+            color: #181a1b;
+        }
+
+        body.dark-mode .text-primary {
+            color: #90caf9 !important;
+        }
+
+        body.dark-mode .text-success {
+            color: #81c784 !important;
+        }
+
+        body.dark-mode .text-info {
+            color: #4fc3f7 !important;
+        }
+
+        body.dark-mode .border-info {
+            border-color: #4fc3f7 !important;
+        }
+
+        body.dark-mode .border-primary {
+            border-color: #90caf9 !important;
+        }
+
+        body.dark-mode .border {
+            border-color: #333 !important;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode textarea.form-control {
+            background: #23272b !important;
+            color: #e0e0e0 !important;
+            border-color: #444 !important;
+        }
+
+        body.dark-mode .form-control:focus,
+        body.dark-mode textarea.form-control:focus {
+            background: #23272b !important;
+            color: #fff !important;
+            border-color: #90caf9 !important;
+            box-shadow: 0 0 0 0.2rem rgba(144, 202, 249, .15);
+        }
+
+        body.dark-mode .btn-primary {
+            background-color: #1976d2 !important;
+            border-color: #1976d2 !important;
+            color: #fff !important;
+        }
+
+        body.dark-mode .btn-primary:hover {
+            background-color: #1565c0 !important;
+            border-color: #1565c0 !important;
+        }
+
+        body.dark-mode .card {
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.25);
+        }
+
+        body.dark-mode .alert-info {
+            background: #23272b !important;
+            color: #90caf9 !important;
+            border-color: #333 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-robot"></i> لوحة تحكم بوت الوظائف
+            </a>
+            <div class="navbar-nav ms-auto align-items-center">
+                <a class="nav-link active" href="/dashboard/settings">
+                    <i class="bi bi-gear"></i> الإعدادات
+                </a>
+                <a class="nav-link" href="/dashboard/categories">
+                    <i class="bi bi-list-ul"></i> الفئات
+                </a>
+                <!-- زر الوضع الليلي -->
+                <button id="toggleDark" class="btn btn-outline-light ms-3" title="تبديل الوضع الليلي">
+                    <i class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-5">
+                    <i class="bi bi-gear-fill"></i> إدارة الإعدادات
+                </h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-text"></i> رسائل البوت
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <% settings.forEach(function(setting) { %>
+                            <form method="POST" action="/dashboard/settings/update" class="mb-4">
+                                <input type="hidden" name="key" value="<%= setting.key %>">
+
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">
+                                            <% if (setting.key==='welcome_message' ) { %>
+                                                <i class="bi bi-hand-wave"></i> رسالة الترحيب
+                                                <% } else if (setting.key==='invalid_keyword_message' ) { %>
+                                                    <i class="bi bi-exclamation-triangle"></i> رسالة الخطأ - كلمة خاطئة
+                                                    <% } else if (setting.key==='menu_message' ) { %>
+                                                        <i class="bi bi-list-ul"></i> رسالة القائمة
+                                                        <% } else if (setting.key==='invalid_selection_message' ) { %>
+                                                            <i class="bi bi-exclamation-circle"></i> رسالة الخطأ -
+                                                            اختيار خاطئ
+                                                            <% } else { %>
+                                                                <i class="bi bi-gear"></i>
+                                                                <%= setting.key %>
+                                                                    <% } %>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="value" class="form-control" rows="3"
+                                            placeholder="أدخل النص هنا..."><%= setting.value %></textarea>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-check-lg"></i> حفظ
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle"></i> معلومات
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-lightbulb"></i> نصائح:</h6>
+                            <ul class="mb-0">
+                                <li>يمكنك استخدام <code>\n</code> للسطر الجديد</li>
+                                <li>يمكنك استخدام الرموز التعبيرية مثل 📋 و ✅</li>
+                                <li>التغييرات ستطبق فوراً على البوت</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // زر الوضع الليلي
+        const toggleDark = document.getElementById('toggleDark');
+        function setDarkMode(on) {
+            if (on) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('dark-mode', '1');
+                toggleDark.innerHTML = '<i class="bi bi-brightness-high-fill"></i>';
+                toggleDark.title = 'تبديل إلى الوضع الفاتح';
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('dark-mode', '0');
+                toggleDark.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                toggleDark.title = 'تبديل الوضع الليلي';
+            }
+        }
+        // عند الضغط
+        toggleDark.onclick = function () {
+            setDarkMode(!document.body.classList.contains('dark-mode'));
+        };
+        // عند تحميل الصفحة
+        if (localStorage.getItem('dark-mode') === '1') {
+            setDarkMode(true);
+        }
+    </script>
+</body>
+
+</html>
